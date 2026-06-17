@@ -1,7 +1,7 @@
 [project]
 name = "blocksize-agentic-payments-mcp"
-version = "0.1.0"
-description = "Read-only MCP discovery package for Blocksize agentic market data and x402 HTTP endpoints."
+version = "0.1.1"
+description = "Read-only MCP discovery package for Blocksize market data, starter credits, state data, and x402 HTTP endpoints."
 readme = "README.md"
 requires-python = ">=3.11"
 license = { text = "MIT" }
