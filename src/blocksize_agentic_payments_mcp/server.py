@@ -16,13 +16,13 @@ BASE_URL = os.environ.get("BLOCKSIZE_BASE_URL", "https://mcp.blocksize.info").rs
 InstrumentSearchQuery = Annotated[
     str,
     Field(
-        description="Symbol, ticker, asset, or pair to search for, such as BTC or EURUSD.",
+        description="Symbol, ticker, asset, or pair to search for, such as BTC, MSOLUSD, or EURUSD.",
         min_length=1,
         max_length=80,
     ),
 ]
 AssetClassFilter = Annotated[
-    Literal["all", "crypto", "equity", "equities", "fx", "metal"],
+    Literal["all", "crypto", "equity", "equities", "fx", "metal", "state-data"],
     Field(description="Optional asset-class filter for client-side narrowing."),
 ]
 InstrumentService = Annotated[
@@ -30,12 +30,12 @@ InstrumentService = Annotated[
     Field(description="Blocksize service namespace to list."),
 ]
 LiveMarketDataService = Annotated[
-    Literal["vwap", "bidask", "fx", "metal"],
-    Field(description="Live HTTP data service to prepare."),
+    Literal["vwap", "bidask", "fx", "metal", "state"],
+    Field(description="Live HTTP data service to prepare. Use state for /v1/state/{pair}."),
 ]
 LiveMarketDataSymbol = Annotated[
     str,
-    Field(description="Exact paid HTTP symbol, such as BTC-USD, EURUSD, or XAUUSD."),
+    Field(description="Exact paid HTTP symbol, such as BTC-USD, EURUSD, XAUUSD, or MSOLUSD."),
 ]
 CatalogSearchQuery = Annotated[
     str,
@@ -61,9 +61,15 @@ DOCS = {
     },
     "doc:pricing": {
         "title": "Pricing Guide",
-        "text": "Per-call pricing and usage guidance for Blocksize x402-paid market data.",
+        "text": "Per-call pricing, starter credits, and usage guidance for Blocksize x402-paid market data.",
         "url": f"{BASE_URL}/pdf/Blocksize_Pricing_Guide.pdf",
-        "keywords": ["pricing", "credits", "x402", "solana", "base", "usdc"],
+        "keywords": ["pricing", "credits", "starter credits", "x402", "solana", "base", "usdc"],
+    },
+    "doc:product-catalog": {
+        "title": "Product Catalog",
+        "text": "Raw data and premium workflow products, including 50 starter live-data credits, state-data coverage, credit costs, endpoint templates, and x402 upgrade path.",
+        "url": f"{BASE_URL}/data-packages.json",
+        "keywords": ["product catalog", "state data", "state-data", "state_instruments", "state_pool", "credits"],
     },
     "doc:openapi": {
         "title": "OpenAPI JSON",
@@ -80,12 +86,14 @@ DOCS = {
 }
 
 mcp = FastMCP(
-    "Blocksize Agentic Payments MCP",
-    version="0.1.0",
+    "Blocksize Market Data MCP",
+    version="0.1.1",
     instructions=(
-        "Read-only Blocksize market-data discovery package. It never fetches paid live "
-        "prices, starts blockchain payments, submits x402 proofs, stores credentials, "
-        "moves funds, places trades, or mutates user accounts."
+        "Read-only Blocksize market-data discovery package. It helps agents inspect "
+        "supported symbols, pricing, starter credits, product catalog metadata, "
+        "state-data coverage, and paid x402 endpoint URLs. It never fetches paid "
+        "live prices, starts blockchain payments, submits x402 proofs, stores "
+        "credentials, moves funds, places trades, or mutates user accounts."
     ),
 )
 
@@ -139,7 +147,7 @@ async def list_instruments(service: InstrumentService = "vwap") -> str:
 @mcp.tool(
     name="get_pricing_info",
     title="Pricing Information",
-    description="Return Blocksize pricing and settlement guidance without starting payment.",
+    description="Return Blocksize pricing, starter-credit positioning, and settlement guidance without starting payment.",
 )
 async def get_pricing_info() -> str:
     return _as_json(
@@ -153,20 +161,68 @@ async def get_pricing_info() -> str:
                 "extended_crypto": "$0.004",
                 "tradfi_fx_metals": "$0.005",
                 "supported_equities": "$0.008",
+                "premium_workflows": "5-50 starter credits depending on product",
+            },
+            "starter_allowance": {
+                "positioning": "Start with 50 live data credits",
+                "allowance_credits": 50,
+                "upgrade_path": "x402 payment or prepaid credit top-ups",
             },
             "settlement": {
                 "primary": "Solana USDC",
                 "fallback": "Base USDC",
                 "mode": "x402 HTTP 402 Payment Required",
             },
+            "state_data": {
+                "endpoint_template": f"{BASE_URL}/v1/state/{{pair}}",
+                "coverage": "Symbol-dependent protocol/pool coverage through state_instruments and state_pool.",
+                "examples": ["MSOLUSD", "JUPSOLUSD", "WSTETHUSD"],
+            },
             "links": {
                 "homepage": f"{BASE_URL}/",
+                "product_catalog": f"{BASE_URL}/data-packages.json",
                 "openapi": f"{BASE_URL}/openapi.json",
                 "pricing_guide": f"{BASE_URL}/pdf/Blocksize_Pricing_Guide.pdf",
                 "support": f"{BASE_URL}/support",
             },
         }
     )
+
+
+@mcp.tool(
+    name="get_product_catalog",
+    title="Product Catalog",
+    description=(
+        "Inspect Blocksize raw data and premium workflow products, including 50 starter "
+        "live-data credits, state-data products, credit costs, endpoint templates, and upgrade path."
+    ),
+)
+async def get_product_catalog() -> str:
+    try:
+        return _as_json(await _get_json("/data-packages.json"))
+    except Exception as exc:
+        return _as_json(
+            {
+                "status": "fallback",
+                "warning": f"Could not fetch live product catalog: {exc}",
+                "starter_allowance": {
+                    "positioning": "Start with 50 live data credits",
+                    "allowance_credits": 50,
+                    "upgrade_path": "x402 payment or prepaid credit top-ups",
+                },
+                "raw_data_products": [
+                    {"name": "Crypto VWAP", "endpoint_template": "/v1/vwap/{pair}"},
+                    {"name": "Bid/Ask Snapshot", "endpoint_template": "/v1/bidask/{pair}"},
+                    {"name": "FX Snapshot", "endpoint_template": "/v1/fx/{pair}"},
+                    {"name": "Metal Snapshot", "endpoint_template": "/v1/metal/{pair}"},
+                    {"name": "State Pool Price", "endpoint_template": "/v1/state/{pair}"},
+                ],
+                "state_data": {
+                    "coverage": "Symbol-dependent protocol/pool coverage through state_instruments and state_pool.",
+                    "examples": ["MSOLUSD", "JUPSOLUSD", "WSTETHUSD"],
+                },
+            }
+        )
 
 
 @mcp.tool(
@@ -185,6 +241,7 @@ async def get_market_data_endpoint(
         "bidask": f"/v1/bidask/{encoded_symbol}",
         "fx": f"/v1/fx/{encoded_symbol}",
         "metal": f"/v1/metal/{encoded_symbol}",
+        "state": f"/v1/state/{encoded_symbol}",
     }[service]
     return _as_json(
         {
@@ -195,16 +252,28 @@ async def get_market_data_endpoint(
                 "service": service,
                 "symbol": clean_symbol,
             },
+            "pricing": {
+                "starter_positioning": "Start with 50 live data credits",
+                "upgrade_path": "x402 payment or prepaid credit top-ups",
+            },
+            "state_data_note": (
+                "State coverage is symbol-dependent and resolves through state_instruments "
+                "plus state_pool for supported protocol/pool symbols."
+                if service == "state"
+                else None
+            ),
             "behavior": {
                 "returns_live_data": False,
                 "starts_payment": False,
                 "side_effects": "none",
                 "next_step": (
-                    "Call the returned URL directly. Without payment it returns an HTTP "
-                    "402 x402 challenge; after valid USDC settlement it returns JSON data."
+                    "Call the returned URL directly. With an eligible starter-credit "
+                    "identity it can spend credits; without credits or payment it returns "
+                    "an HTTP 402 x402 challenge; after valid USDC settlement it returns JSON data."
                 ),
             },
             "links": {
+                "product_catalog": f"{BASE_URL}/data-packages.json",
                 "openapi": f"{BASE_URL}/openapi.json",
                 "swagger": f"{BASE_URL}/docs",
                 "quickstart": f"{BASE_URL}/quickstart/remote-mcp",
