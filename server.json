@@ -2,10 +2,10 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.jf-cmyk/blocksize-agentic-payments-mcp",
   "title": "Blocksize Market Data MCP",
-  "description": "Read-only GitHub-hosted MCP package for Blocksize market-data discovery, 50 starter live-data credits, state-data coverage, pricing, documentation, and x402 endpoint building.",
+  "description": "Read-only GitHub-hosted MCP package for Blocksize market-data discovery: pricing, free-tier and subscription guidance, state-data coverage, docs, and x402 endpoint building.",
   "homepage": "https://github.com/jf-cmyk/blocksize-agentic-payments-mcp",
   "websiteUrl": "https://mcp.blocksize.info/",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "packages": [
     {
       "registryType": "git",

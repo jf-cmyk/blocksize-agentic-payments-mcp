@@ -61,13 +61,13 @@ DOCS = {
     },
     "doc:pricing": {
         "title": "Pricing Guide",
-        "text": "Per-call pricing, starter credits, and usage guidance for Blocksize x402-paid market data.",
+        "text": "Per-call pricing, the monthly free tier, subscription plans, and usage guidance for Blocksize x402-paid market data.",
         "url": f"{BASE_URL}/pdf/Blocksize_Pricing_Guide.pdf",
         "keywords": ["pricing", "credits", "starter credits", "x402", "solana", "base", "usdc"],
     },
     "doc:product-catalog": {
         "title": "Product Catalog",
-        "text": "Raw data and premium workflow products, including 50 starter live-data credits, state-data coverage, credit costs, endpoint templates, and x402 upgrade path.",
+        "text": "Raw data and premium workflow products, including the monthly free tier, state-data coverage, credit costs, endpoint templates, and x402 upgrade path.",
         "url": f"{BASE_URL}/data-packages.json",
         "keywords": ["product catalog", "state data", "state-data", "state_instruments", "state_pool", "credits"],
     },
@@ -161,12 +161,14 @@ async def get_pricing_info() -> str:
                 "extended_crypto": "$0.004",
                 "tradfi_fx_metals": "$0.005",
                 "supported_equities": "$0.008",
-                "premium_workflows": "5-50 starter credits depending on product",
+                "premium_workflows": "5-50 free-tier credits depending on product",
             },
             "starter_allowance": {
-                "positioning": "Start with 50 live data credits",
-                "allowance_credits": 50,
-                "upgrade_path": "x402 payment or prepaid credit top-ups",
+                "positioning": "Start with 15,000 free live-data credits every month",
+                "allowance_credits": 15000,
+                "period": "calendar_month_utc",
+                "eligibility": "authenticated_connector_only",
+                "upgrade_path": "subscription from EUR 49/month (free trial at /go/free-trial, plans at /go/pricing) or x402 payment",
             },
             "settlement": {
                 "primary": "Solana USDC",
@@ -193,8 +195,8 @@ async def get_pricing_info() -> str:
     name="get_product_catalog",
     title="Product Catalog",
     description=(
-        "Inspect Blocksize raw data and premium workflow products, including 50 starter "
-        "live-data credits, state-data products, credit costs, endpoint templates, and upgrade path."
+        "Inspect Blocksize raw data and premium workflow products, including the monthly "
+        "free tier, state-data products, credit costs, endpoint templates, and upgrade path."
     ),
 )
 async def get_product_catalog() -> str:
@@ -206,9 +208,11 @@ async def get_product_catalog() -> str:
                 "status": "fallback",
                 "warning": f"Could not fetch live product catalog: {exc}",
                 "starter_allowance": {
-                    "positioning": "Start with 50 live data credits",
-                    "allowance_credits": 50,
-                    "upgrade_path": "x402 payment or prepaid credit top-ups",
+                    "positioning": "Start with 15,000 free live-data credits every month",
+                    "allowance_credits": 15000,
+                    "period": "calendar_month_utc",
+                    "eligibility": "authenticated_connector_only",
+                    "upgrade_path": "subscription from EUR 49/month (free trial at /go/free-trial, plans at /go/pricing) or x402 payment",
                 },
                 "raw_data_products": [
                     {"name": "Crypto VWAP", "endpoint_template": "/v1/vwap/{pair}"},
@@ -253,8 +257,8 @@ async def get_market_data_endpoint(
                 "symbol": clean_symbol,
             },
             "pricing": {
-                "starter_positioning": "Start with 50 live data credits",
-                "upgrade_path": "x402 payment or prepaid credit top-ups",
+                "starter_positioning": "Start with 15,000 free live-data credits every month",
+                "upgrade_path": "subscription from EUR 49/month (free trial at /go/free-trial) or x402 payment",
             },
             "state_data_note": (
                 "State coverage is symbol-dependent and resolves through state_instruments "
@@ -267,8 +271,8 @@ async def get_market_data_endpoint(
                 "starts_payment": False,
                 "side_effects": "none",
                 "next_step": (
-                    "Call the returned URL directly. With an eligible starter-credit "
-                    "identity it can spend credits; without credits or payment it returns "
+                    "Call the returned URL directly. With an eligible authenticated connector "
+                    "identity it spends free-tier credits; without credits or payment it returns "
                     "an HTTP 402 x402 challenge; after valid USDC settlement it returns JSON data."
                 ),
             },

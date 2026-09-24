@@ -6,9 +6,9 @@ Read-only Model Context Protocol (MCP) package for Blocksize real-time market-da
 
 This package gives MCP clients a GitHub-hosted, installable wrapper around the public Blocksize discovery surface. It helps agents search supported instruments, inspect pricing, review the product catalog, find docs, and build exact paid HTTP URLs for live data. It does not fetch live prices, submit x402 payment proofs, move funds, store credentials, or execute trades.
 
-## Starter Credits
+## Free Tier and Subscriptions
 
-Eligible agents can start with 50 live-data credits before upgrading through x402 payment or prepaid credit top-ups. Discovery tools are free and read-only; live market data and premium workflow endpoints spend starter credits or return an HTTP `402 Payment Required` challenge for x402 settlement.
+Eligible authenticated connector users (Claude, Cursor, OpenAI) receive 15,000 free live-data credits every calendar month under an evaluation licence with "Data by Blocksize" attribution. Production use continues with a subscription from EUR 49/month (free trial at `https://mcp.blocksize.info/go/free-trial`, plans at `https://mcp.blocksize.info/go/pricing`) or direct x402 payment. Discovery tools in this package are free and read-only; live market data and premium workflow endpoints return an HTTP `402 Payment Required` challenge for x402 settlement when called without connector credits. Terms: `https://blocksize.info/terms-conditions-data/`.
 
 ## State Data
 
@@ -65,7 +65,7 @@ https://mcp.blocksize.info/mcp/server/
 
 ## Live Data Boundary
 
-Live production market data is available through Blocksize's paid x402 HTTP API, not through this package's discovery tools. The endpoint-builder tools only return URLs and guidance; a direct HTTP call without starter credits or payment returns a `402 Payment Required` challenge.
+Live production market data is available through Blocksize's paid x402 HTTP API, not through this package's discovery tools. The endpoint-builder tools only return URLs and guidance; a direct HTTP call without connector credits or payment returns a `402 Payment Required` challenge.
 
 Useful links:
 
