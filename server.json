@@ -5,7 +5,7 @@
   "description": "Read-only GitHub-hosted MCP package for Blocksize market-data discovery: pricing, free-tier and subscription guidance, state-data coverage, docs, and x402 endpoint building.",
   "homepage": "https://github.com/jf-cmyk/blocksize-agentic-payments-mcp",
   "websiteUrl": "https://mcp.blocksize.info/",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "packages": [
     {
       "registryType": "git",

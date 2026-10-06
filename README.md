@@ -8,7 +8,7 @@ This package gives MCP clients a GitHub-hosted, installable wrapper around the p
 
 ## Free Tier and Subscriptions
 
-Eligible authenticated connector users (Claude, Cursor, OpenAI) receive 15,000 free live-data credits every calendar month under an evaluation licence with "Data by Blocksize" attribution. Production use continues with a subscription from EUR 49/month (free trial at `https://mcp.blocksize.info/go/free-trial`, plans at `https://mcp.blocksize.info/go/pricing`) or direct x402 payment. Discovery tools in this package are free and read-only; live market data and premium workflow endpoints return an HTTP `402 Payment Required` challenge for x402 settlement when called without connector credits. Terms: `https://blocksize.info/terms-conditions-data/`.
+Signed-in users of the Claude, ChatGPT and Cursor connectors receive 30,000 free live-data credits every calendar month under an evaluation licence with "Data by Blocksize" attribution. One price list applies everywhere: 1 credit = $0.001 USDC, so every product costs the same in credits as it does in USDC over x402 (core crypto 2, long-tail crypto 4, FX and metals 5, tokenized equities 8, workflow products 100 to 2,500). Production use continues with a subscription from EUR 49/month (free trial at `https://mcp.blocksize.info/go/free-trial`, plans at `https://mcp.blocksize.info/go/pricing`) or direct x402 payment. Discovery tools in this package are free and read-only; live market data and premium workflow endpoints return an HTTP `402 Payment Required` challenge for x402 settlement when called without connector credits. Terms: `https://blocksize.info/terms-conditions-data/`.
 
 ## State Data
 
@@ -18,8 +18,8 @@ The hosted Blocksize API includes state-data and oracle-aware coverage for suppo
 
 - `search_pairs` - search supported symbols and metadata.
 - `list_instruments` - list instruments for `vwap`, `bidask`, `fx`, or `metal`.
-- `get_pricing_info` - inspect current pricing, starter-credit positioning, and supported settlement rails.
-- `get_product_catalog` - inspect raw data and premium workflow products, including starter-credit costs, state-data products, endpoint templates, and upgrade path.
+- `get_pricing_info` - inspect current pricing, free-tier positioning, and supported settlement rails.
+- `get_product_catalog` - inspect raw data and premium workflow products, including credit costs, state-data products, endpoint templates, and upgrade path.
 - `get_market_data_endpoint` - build a paid x402 HTTP endpoint URL without calling it, including `/v1/state/{pair}` for state data.
 - `search` - search Blocksize docs/catalog entries.
 - `fetch` - fetch one docs/catalog entry returned by `search`.
